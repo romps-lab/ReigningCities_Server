@@ -1,0 +1,11 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "email" : "sfs"
+}
+
+###
+
+GET http://localhost:3000/posts
+auth-token : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoic2ZzIiwiaWF0IjoxNTg5MTY5MDIzLCJleHAiOjE1ODkyNTU0MjN9.irKw1JuiDJSOi4qF8--mcAQSLVh6Qxd8LCMz9FssgEc"
