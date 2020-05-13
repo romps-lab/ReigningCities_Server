@@ -9,6 +9,7 @@ require('dotenv').config();
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var postsRouter = require('./routes/posts');
+var pingRouter = require('./routes/ping');
 var testRouter  = require('./routes/test')
 
 var app = express();
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/login' , loginRouter);
 app.use('/posts' , postsRouter);
+app.use('/ping' , pingRouter);
 
 //TEST ROUTE
 app.use('/test' , testRouter);

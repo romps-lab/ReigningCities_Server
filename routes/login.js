@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const joi =  require('@hapi/joi');
+const mongoose = require('mongoose');
+const userModel = require('../models/users')
 
 /*
   <POST>
@@ -31,57 +33,142 @@ const joi =  require('@hapi/joi');
 
 const loginParamSchema = joi.object({
 
-  email : joi.string().alphanum().email().required(),
-  deviceModel : joi.string().alphanum().optional(),
-  os : joi.string().alphanum().optional()
+  email : joi.string().email().required(),
+  deviceModel : joi.string().optional(),
+  os : joi.string().optional()
 
 })
 
-router.post('/' , function(req, res, next) {
+mongoose.connect('mongodb://localhost:27017/reigningcities' , 
+                { useNewUrlParser: true , useUnifiedTopology: true, 'useFindAndModify': false})
+       .then(() => {
+         console.log('Database connection successful')
+       })
+       .catch(err => {
+         console.error('Database connection error')
+       });
 
-  if(!areParametersValid(req)){ 
-    res.status(process.env.BADREQUEST).send("Invalid Parameters"); 
+
+router.post('/' , async function(req, res, next) {
+
+  //VALIDATE POST BODY PARAMETERS.
+  const {value , error} = loginParamSchema.validate(req.body);
+
+  // IF INVALID PARAMETERS : STATUS_CODE = 400 (BADREQUEST)
+  if(error){
+    return res.status(process.env.BADREQUEST)
+              .jsonp(error.details[0].message);
   }
-  if(Object.keys(req.body).length > 3){ 
-    res.status(process.env.UNPROCESSABLE).send("TOO MANY PARAMETERS");
-   }
-
-  let postParameters = populatePostParameters(req);
-
-  res.status(process.env.OK).jsonp(postParameters);
-
+  
+  /*IF USER ALREADY EXIST && RefreshToken not expired {PENDING}
+                STATUS_CODE = 409 (CONFLICT)
+  */
+  user = await doesUserExist(value.email);
+  if(user != undefined){
+    console.log("Old User : "+user.os);
+    let refreshToken = user.refreshToken;
+    if(refreshToken == undefined){
+      //execution should never reach here....
+      return res.status(process.env.CONFLICT).jsonp("Unknown");
+    }
+    if(!isRefreshTokenExpired(refreshToken , res)){
+      return res.status(process.env.UNPROCESSABLE).jsonp("RefreshToken Still Valid");
+    }
+    else{
+      user.refreshToken = undefined;
+      let tokens = prepareTokens(user.email);
+      user.refreshToken = tokens.refreshToken;
+      await userModel.findOneAndUpdate({"email" : user.email} , {"refreshToken" : user.refreshToken});
+      return res.status(process.env.OK).jsonp(tokens);
+    }
+    
+  }
+  else{
+    console.log("New User");
+    let tokens = prepareTokens(value.email);
+    value.refreshToken = tokens.refreshToken;
+    if(await addNewUser(value)){return res.status(process.env.CREATED).jsonp(tokens);}
+    else{
+      //check database
+      return res.status(process.env.SERVER_ERROR).send();
+    }
+  }
+  return res.status(process.env.BADREQUEST).send();
 });
 
+async function doesUserExist(email){
 
-function areParametersValid(req)
-{
-  let result = false;
-  if(req.body.hasOwnProperty(process.env.EMAIL)){
-    result = true; 
-  }
-  return result;
+  let exists =  await userModel.find({"email" : email})
+           .then(
+             doc => {
+                if(doc.length){
+                  console.log(doc);
+                  return doc[0];
+                }
+              })
+            .catch(
+              err =>{
+                return undefined;
+            })
+  console.log("Exists : " + exists);
+  return exists;
+
 }
 
-function populatePostParameters(req){
-  let result = {};
+function isRefreshTokenExpired(refreshToken , res){
 
-  if(req.body.hasOwnProperty(process.env.EMAIL)){
-    result.email = req.body.email; 
-  }
-  else{ res.status(process.env.BADREQUEST).send("Invalid Parameters");}
+  let isExpired = false;
 
-  if(req.body.hasOwnProperty(process.env.DEVICEMODEL)){
-    result.deviceModel = req.body.deviceModel; 
-  }
-  else{result.deviceModel = undefined;}
+  jwt.verify(refreshToken , process.env.REFRESHTOKEN_SECRET , function(err , payload){
+    if(!payload){
+      if(err.name == process.env.TOKEN_EXP_ERROR){
+         isExpired = true;
+      }
+      else if(err.name == process.env.TOKEN_JWT_ERROR){
+        //execution should necver reach here.... 
+        return res.status(process.env.CONFLICT).send("Error Processing request");
+      }
+      
+    }
+  })
 
-  if(req.body.hasOwnProperty(process.env.OPERATING_SYS)){
-    result.os = req.body.os; 
-  }
-  else{result.os = undefined;}
+  return isExpired;
+
+}
+
+
+function prepareTokens(email){
+  let access_token = jwt.sign({'${process.env.EMAIL}' : email} , 
+    process.env.ACCESSTOKEN_SECRET,
+   { expiresIn: 30 });
+  let refresh_token = jwt.sign({'${process.env.EMAIL}' : email }, 
+    process.env.REFRESHTOKEN_SECRET, 
+    { expiresIn: process.env.REFRESHTOKEN_EXP_TIME});
+
+  return {"accessToken" : access_token , "refreshToken" : refresh_token};
+}
+
+async function updateRefreshToken(user){
+  await userModel.findOneAndUpdate({"email" : user.email} , {"refreshToken" : user.refreshToken});
+  return;
+}
+
+async function addNewUser(user){
+
+  newUser = new userModel(user); 
+  let isAdded = await newUser.save()
+                            .then(
+                              user => {
+                                return true;
+                              })
+                            .catch(
+                              err =>{
+                                return false;
+                            });
   
+  return isAdded;
 
-  return result;
 }
+
 
 module.exports = router;
