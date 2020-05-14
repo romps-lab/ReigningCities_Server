@@ -11,6 +11,7 @@ var loginRouter = require('./routes/login');
 var postsRouter = require('./routes/posts');
 var pingRouter = require('./routes/ping');
 var testRouter  = require('./routes/test')
+var newAccesRoute = require('./routes/getNewAccess');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/', indexRouter);
 app.use('/login' , loginRouter);
 app.use('/posts' , postsRouter);
 app.use('/ping' , pingRouter);
+app.use('/getNewAccess' , newAccesRoute);
 
 //TEST ROUTE
 app.use('/test' , testRouter);

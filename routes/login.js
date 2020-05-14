@@ -39,6 +39,7 @@ const loginParamSchema = joi.object({
 
 })
 
+//DONT KNOW DO I HAVE TO CONFIGURE MONGOOSE IN EACH MODULE
 mongoose.connect('mongodb://localhost:27017/reigningcities' , 
                 { useNewUrlParser: true , useUnifiedTopology: true, 'useFindAndModify': false})
        .then(() => {
@@ -50,7 +51,6 @@ mongoose.connect('mongodb://localhost:27017/reigningcities' ,
 
 
 router.post('/' , async function(req, res, next) {
-
   //VALIDATE POST BODY PARAMETERS.
   const {value , error} = loginParamSchema.validate(req.body);
 
@@ -59,13 +59,12 @@ router.post('/' , async function(req, res, next) {
     return res.status(process.env.BADREQUEST)
               .jsonp(error.details[0].message);
   }
-  
   /*IF USER ALREADY EXIST && RefreshToken not expired {PENDING}
                 STATUS_CODE = 409 (CONFLICT)
   */
   user = await doesUserExist(value.email);
   if(user != undefined){
-    console.log("Old User : "+user.os);
+    //console.log("Old User : "+user.os);
     let refreshToken = user.refreshToken;
     if(refreshToken == undefined){
       //execution should never reach here....
@@ -84,16 +83,16 @@ router.post('/' , async function(req, res, next) {
     
   }
   else{
-    console.log("New User");
+    //console.log("New User");
     let tokens = prepareTokens(value.email);
     value.refreshToken = tokens.refreshToken;
     if(await addNewUser(value)){return res.status(process.env.CREATED).jsonp(tokens);}
     else{
       //check database
-      return res.status(process.env.SERVER_ERROR).send();
+      return res.status(process.env.SERVER_ERROR).send("Unknown");
     }
   }
-  return res.status(process.env.BADREQUEST).send();
+  return res.status(process.env.BADREQUEST).send("Fall Back");
 });
 
 async function doesUserExist(email){
@@ -102,15 +101,15 @@ async function doesUserExist(email){
            .then(
              doc => {
                 if(doc.length){
-                  console.log(doc);
+                  //console.log(doc);
                   return doc[0];
                 }
               })
             .catch(
               err =>{
                 return undefined;
-            })
-  console.log("Exists : " + exists);
+            });
+  //console.log("Exists : " + exists);
   return exists;
 
 }
@@ -138,12 +137,12 @@ function isRefreshTokenExpired(refreshToken , res){
 
 
 function prepareTokens(email){
-  let access_token = jwt.sign({'${process.env.EMAIL}' : email} , 
+  let access_token = jwt.sign({'email' : email} , 
     process.env.ACCESSTOKEN_SECRET,
    { expiresIn: 30 });
-  let refresh_token = jwt.sign({'${process.env.EMAIL}' : email }, 
+  let refresh_token = jwt.sign({'email' : email }, 
     process.env.REFRESHTOKEN_SECRET, 
-    { expiresIn: process.env.REFRESHTOKEN_EXP_TIME});
+    { expiresIn: 60});
 
   return {"accessToken" : access_token , "refreshToken" : refresh_token};
 }

@@ -8,6 +8,7 @@ router.get('/' , function(req , res , next){
     if(!accessToken) return res.status(400).send('Nedd Access token to use service');
     console.log(accessToken);
     var user = jwt_decode(accessToken);
+    console.log("USER USER : "+ user.user);
     req.body.tokenUser = user;
     jwt.verify(accessToken , process.env.ACCESSTOKEN_SECRET , function(err , payload){
 
