@@ -125,6 +125,7 @@ function isRefreshTokenExpired(refreshToken , res){
       }
       else if(err.name == process.env.TOKEN_JWT_ERROR){
         //execution should necver reach here.... 
+        //which means we are storing wrong refresh token inside DB
         return res.status(process.env.CONFLICT).send("Error Processing request");
       }
       
@@ -139,10 +140,10 @@ function isRefreshTokenExpired(refreshToken , res){
 function prepareTokens(email){
   let access_token = jwt.sign({'email' : email} , 
     process.env.ACCESSTOKEN_SECRET,
-   { expiresIn: 30 });
+   { expiresIn: process.env.ACCESSTOKEN_EXP_TIME });
   let refresh_token = jwt.sign({'email' : email }, 
     process.env.REFRESHTOKEN_SECRET, 
-    { expiresIn: 60});
+    { expiresIn: process.env.REFRESHTOKEN_EXP_TIME});
 
   return {"accessToken" : access_token , "refreshToken" : refresh_token};
 }

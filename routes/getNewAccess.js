@@ -50,7 +50,7 @@ router.post('/' , async function(req, res, next){
 
     let newAccessToken = jwt.sign({'email' : email} , 
                                 process.env.ACCESSTOKEN_SECRET,
-                                { expiresIn: 60 } );
+                                { expiresIn: process.env.ACCESSTOKEN_EXP_TIME } );
 
     return res.status(process.env.OK).jsonp({"accessToken" : newAccessToken});
 
