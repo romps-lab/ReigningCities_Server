@@ -1,0 +1,104 @@
+{
+  "defence_base": [
+    {
+      "name": "soldiers",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    },
+    {
+      "name": "archers",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    }
+  ],
+  "agriculture": [
+    {
+      "name": "Chicken_Farm",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    },
+    {
+      "name": "Rice_Farm",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    }
+  ],
+  "currency": [
+    {
+      "name": "Gold_Mine",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    },
+    {
+      "name": "Reserve_Bank",
+      "img": "url_img",
+      "types": [
+        {
+          "name": "level1",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        },
+        {
+          "name": "level2",
+          "img": "url_img",
+          "assetpath": "url_asset"
+        }
+      ]
+    }
+  ]
+}

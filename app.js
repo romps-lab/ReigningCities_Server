@@ -12,6 +12,9 @@ var postsRouter = require('./routes/posts');
 var pingRouter = require('./routes/ping');
 var testRouter  = require('./routes/test')
 var newAccesRoute = require('./routes/getNewAccess');
+var gameConfigRoute = require('./routes/gameConfig');
+var assetbundleRoute = require('./routes/assetBundle');
+var webViewRoute = require('./routes/rcmaps');
 
 var app = express();
 
@@ -30,6 +33,9 @@ app.use('/login' , loginRouter);
 app.use('/posts' , postsRouter);
 app.use('/ping' , pingRouter);
 app.use('/getNewAccess' , newAccesRoute);
+app.use('/gameConfig' , gameConfigRoute );
+app.use('/downloads/bundles' , assetbundleRoute);
+app.use('/rcmap' , webViewRoute);
 
 //TEST ROUTE
 app.use('/test' , testRouter);
