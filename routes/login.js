@@ -35,7 +35,8 @@ const loginParamSchema = joi.object({
 
   email : joi.string().email().required(),
   deviceModel : joi.string().optional(),
-  os : joi.string().optional()
+  os : joi.string().optional(),
+  refreshToken : joi.string().optional()
 
 })
 
@@ -65,20 +66,34 @@ router.post('/' , async function(req, res, next) {
   user = await doesUserExist(value.email);
   if(user != undefined){
     //console.log("Old User : "+user.os);
-    let refreshToken = user.refreshToken;
+    let refreshToken = user.refreshToken; //current refreshtoken saved in db.
     if(refreshToken == undefined){
       //execution should never reach here....
       return res.status(process.env.CONFLICT).jsonp("Unknown");
     }
-    if(!isRefreshTokenExpired(refreshToken , res)){
-      return res.status(process.env.UNPROCESSABLE).jsonp("RefreshToken Still Valid");
+    if(value.refreshToken != undefined){
+      console.log("LOGIN : " +value.refreshToken);
+      if(recievedRefreshValid(value.refreshToken)){
+          console.log("No its Valid");
+      }
+      if(isRefreshTokenExpired(value.refreshToken) && recievedRefreshValid(value.refreshToken)){
+        currentRefreshInDB = refreshToken;
+        if(!isRefreshTokenExpired(refreshToken , res)){
+          return res.status(process.env.OK).jsonp({"refreshToken" : currentRefreshInDB});
+        }
+        else{
+          user.refreshToken = undefined;
+          let tokens = prepareTokens(user.email);
+          user.refreshToken = tokens.refreshToken;
+          await userModel.findOneAndUpdate({"email" : user.email} , {"refreshToken" : user.refreshToken});
+          return res.status(process.env.CREATED).jsonp(tokens);
+        }
+      }
+      console.log("Oh Oh");
     }
     else{
-      user.refreshToken = undefined;
-      let tokens = prepareTokens(user.email);
-      user.refreshToken = tokens.refreshToken;
-      await userModel.findOneAndUpdate({"email" : user.email} , {"refreshToken" : user.refreshToken});
-      return res.status(process.env.OK).jsonp(tokens);
+      console.log("Refresh not der...");
+      return res.status(process.env.BADREQUEST).send("Fall Back");
     }
     
   }
@@ -117,23 +132,41 @@ async function doesUserExist(email){
 function isRefreshTokenExpired(refreshToken , res){
 
   let isExpired = false;
-
-  jwt.verify(refreshToken , process.env.REFRESHTOKEN_SECRET , function(err , payload){
-    if(!payload){
-      if(err.name == process.env.TOKEN_EXP_ERROR){
-         isExpired = true;
-      }
-      else if(err.name == process.env.TOKEN_JWT_ERROR){
-        //execution should necver reach here.... 
-        //which means we are storing wrong refresh token inside DB
-        return res.status(process.env.CONFLICT).send("Error Processing request");
-      }
-      
+  try{
+    jwt.verify(refreshToken , process.env.REFRESHTOKEN_SECRET);
+    console.log("Not Expired..");
+  }
+  catch(err){
+    if(err.name == process.env.TOKEN_EXP_ERROR){
+      console.log("Expired..");
+      return true;
     }
-  })
+    else if(err.name == process.env.TOKEN_JWT_ERROR){
+      //execution should necver reach here.... 
+      //which means we are storing wrong refresh token inside DB
+      return res.status(process.env.CONFLICT).send("Error Processing request");
+    }
+  }
 
   return isExpired;
 
+}
+
+function recievedRefreshValid(refreshToken){
+  let isValid = true;
+  try{
+    jwt.verify(refreshToken , process.env.REFRESHTOKEN_SECRET);
+    console.log("Valid");
+  }
+  catch(err){
+   if(err.name == process.env.TOKEN_JWT_ERROR){
+     console.log("Invalid");
+      return false;
+    }
+    console.log("Unknown..");
+  }
+
+  return isValid;
 }
 
 

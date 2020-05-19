@@ -1,26 +1,14 @@
-const jwt = require('jsonwebtoken');
 
 module.exports = {
  
-    verifyToken : function(token , secret){
-        let statusCode = process.env.OK;
-        let isGood = true
-        
-        try {
-            jwt.verify(token , secret);
-        }
-        catch (err) 
-        { 
-            statusCode = process.env.BADREQUEST;
-            console.log(err.name);
-            if(err.name == process.env.TOKEN_EXP_ERROR){
-                console.log("Token Expired")
-                statusCode = process.env.FORBIDDEN;
-            }
-            isGood = false;
-        }
-    
-        return {isGood , statusCode};
+    isPlayerExist : async function (dbCollection , id){
+        let player =  await dbCollection.findOne({'_id' : id}).exec();
+        return player;
+    },
+
+    registerPlayer : async function(dbCollection , id){
+        let newPlayer = new dbCollection({"_id" : id , "entities" : []});
+        await newPlayer.save()
     }
     
 }

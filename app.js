@@ -29,10 +29,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/login' , loginRouter);
-app.use('/posts' , postsRouter);
+//app.use('/login' , loginRouter);
+//app.use('/posts' , postsRouter);
 app.use('/ping' , pingRouter);
-app.use('/getNewAccess' , newAccesRoute);
+//app.use('/getNewAccess' , newAccesRoute);
 app.use('/gameConfig' , gameConfigRoute );
 app.use('/downloads/bundles' , assetbundleRoute);
 app.use('/rcmap' , webViewRoute);

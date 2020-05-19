@@ -29,11 +29,16 @@ html
 			}).addTo(mymap);
 
 			L.marker([#{latitude},#{longitude}]).addTo(mymap)
-			.bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+			.bindPopup('A pretty CSS3 popup.<br> Easily customizable.<br><b>Double Click to load me')
 			.openPopup()
-			.on('click', onClick);
+			.on('dblclick' , onClick)
 
-			function onClick(e) {Android.showToast(JSON. stringify(e.latlng));}
+			L.marker([-34.423309,150.871048]).addTo(mymap)
+			.bindPopup('A pretty CSS3 popup.<br> Easily customizable.<br><b>Double Click to load me')
+			.openPopup()
+			.on('dblclick' , onClick)
+
+			function onClick(e) {Android.showToast(JSON.stringify(e.latlng));}
 
 			/*var popup = L.popup()
 			.setLatLng([#{latitude},#{longitude}])
