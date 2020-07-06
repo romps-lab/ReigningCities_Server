@@ -7,8 +7,21 @@ module.exports = {
     },
 
     registerPlayer : async function(dbCollection , id){
-        let newPlayer = new dbCollection({"_id" : id , "entities" : []});
+        let newPlayer = new dbCollection({"_id" : id , "entities" : ""});
         await newPlayer.save()
+    },
+
+    updatePlayerEntities : async function(dbCollection , id , resources){
+        const filter = { "_id" : id };
+        const update = { entities: resources };
+
+        // `doc` is the document _after_ `update` was applied because of
+        // `new: true`
+        let doc = await dbCollection.findOneAndUpdate(filter, update, {
+        new: true
+        });
+
+        return doc
     }
     
 }

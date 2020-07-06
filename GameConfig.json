@@ -1,104 +1,35 @@
 {
-  "defence_base": [
-    {
-      "name": "soldiers",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    },
-    {
-      "name": "archers",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    }
-  ],
-  "agriculture": [
-    {
-      "name": "Chicken_Farm",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    },
-    {
-      "name": "Rice_Farm",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    }
-  ],
-  "currency": [
-    {
-      "name": "Gold_Mine",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    },
-    {
-      "name": "Reserve_Bank",
-      "img": "url_img",
-      "types": [
-        {
-          "name": "level1",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        },
-        {
-          "name": "level2",
-          "img": "url_img",
-          "assetpath": "url_asset"
-        }
-      ]
-    }
-  ]
+  "mainEntities": {
+    "Building": [
+      {
+        "displayName": "Level1",
+        "name": "Old building",
+        "prefabRef": "Old building"
+      },
+      {
+        "displayName": "Level2",
+        "name": "storage_building-1 1",
+        "prefabRef": "storage_building-1 1"
+      }
+    ]
+  },
+  "supportingEntities": {
+    "Cannon": [
+      {
+        "displayName": "Level1",
+        "name": "tower_defence",
+        "prefabRef": "tower_defence"
+      },
+      {
+        "displayName": "Level2",
+        "name": "SciFi-Tower_Rocket Launcher",
+        "prefabRef": "SciFi-Tower_Rocket Launcher"
+      },
+      {
+        "displayName": "Level1",
+        "name": "Tree_Type05",
+        "prefabRef": "Tree_Type05"
+      }
+    ]
+  }
 }

@@ -18,7 +18,7 @@ router.post('/' , async function(req, res){
   playerDocument = await utility.isPlayerExist(playerCollection , reqEmail);
   let playerEntities = playerDocument.entities;
 
-  return res.status(process.env.OK).send({"entities" : playerEntities});
+  return res.status(process.env.OK).send( playerEntities);
   
 });
 

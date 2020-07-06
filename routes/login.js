@@ -40,16 +40,6 @@ const loginParamSchema = joi.object({
 
 })
 
-//DONT KNOW DO I HAVE TO CONFIGURE MONGOOSE IN EACH MODULE
-mongoose.connect('mongodb://localhost:27017/reigningcities' , 
-                { useNewUrlParser: true , useUnifiedTopology: true, 'useFindAndModify': false})
-       .then(() => {
-         console.log('Database connection successful')
-       })
-       .catch(err => {
-         console.error('Database connection error')
-       });
-
 
 router.post('/' , async function(req, res, next) {
   //VALIDATE POST BODY PARAMETERS.

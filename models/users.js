@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 let userSchema = new mongoose.Schema({
 
     "_id" : String,
-    "entities" : []
+    "entities" : ""
 })
 
 module.exports = mongoose.model('USERS' , userSchema);

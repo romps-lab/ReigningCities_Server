@@ -2,10 +2,12 @@ doctype html
 html
 	head
 		title Openstreet Maps Leafleat.
-		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		//meta(name="viewport" content="width=device-width, initial-scale=1.0")
 		link(rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
 		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 		crossorigin="")
+
+		link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css")
 
 		script(src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
 		integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
@@ -14,13 +16,22 @@ html
 		style(type="text/css").
 			#map1{
 				height: 100vh;
-				width: 100%;
-				position:relative;
-				overflow:hidden;
+				
 			}
 
 	body
+		//img(src="images/Home.png", alt="")
+		audio(id='backgroundMusic')
+			source(src='/images/backgroundMusic.mp3', type='audio/mpeg')
+
+		div.row.fixed-top
+			div.col.d-flex.justify-content-center
+				img(src="/images/Home.png", alt="Go home" , width = 30 , height = 30 , onClick="onHomeClick()")
+			div.col.d-flex.justify-content-center
+				img(src="/images/speakerOff.png", alt="Go home" , width = 30 , height = 30 , id="soundOnOff" , onClick="toggleMusic()")
+		
 		div#map1
+		
 
 		script.
 			var mymap = L.map('map1').setView([#{latitude},#{longitude}], 13);
@@ -38,9 +49,32 @@ html
 			.openPopup()
 			.on('dblclick' , onClick)
 
-			function onClick(e) {Android.showToast(JSON.stringify(e.latlng));}
-
 			/*var popup = L.popup()
 			.setLatLng([#{latitude},#{longitude}])
 			.setContent("I am a standalone popup.")
 			.openOn(mymap);*/
+			var audioSrc = document.getElementById("backgroundMusic");
+			var volumeImg = document.getElementById("soundOnOff");
+
+			function onClick(e) {
+				audioSrc.pause()
+				volumeImg.src = "/images/speakerOff.png"
+				Android.showToast(JSON.stringify(e.latlng));
+			}
+
+			function onHomeClick(){
+				audioSrc.pause()
+				volumeImg.src = "/images/speakerOff.png"
+				Android.goToHomeScreen()
+			}
+
+			function toggleMusic() {
+				if(audioSrc.paused){
+					audioSrc.play()
+					volumeImg.src = "/images/speakerON.png"
+				}
+				else{
+					audioSrc.pause()
+					volumeImg.src = "/images/speakerOff.png"
+				}
+			} 

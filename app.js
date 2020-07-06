@@ -4,6 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/reigningcities' , 
+                { useNewUrlParser: true , useUnifiedTopology: true, 'useFindAndModify': false})
+       .then(() => {
+         console.log('Database connection successful')
+       })
+       .catch(err => {
+         console.error('Database connection error')
+       });
 
 //ALL ROUTES REFRENCES
 var indexRouter = require('./routes/index');
@@ -15,6 +25,7 @@ var newAccesRoute = require('./routes/getNewAccess');
 var gameConfigRoute = require('./routes/gameConfig');
 var assetbundleRoute = require('./routes/assetBundle');
 var webViewRoute = require('./routes/rcmaps');
+var updateEntityRoute = require('./routes/updateEntities');
 
 var app = express();
 
@@ -36,6 +47,7 @@ app.use('/ping' , pingRouter);
 app.use('/gameConfig' , gameConfigRoute );
 app.use('/downloads/bundles' , assetbundleRoute);
 app.use('/rcmap' , webViewRoute);
+app.use('/updateEntities' , updateEntityRoute);
 
 //TEST ROUTE
 app.use('/test' , testRouter);
